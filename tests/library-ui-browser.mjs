@@ -14,8 +14,8 @@ const SETTINGS = Object.freeze({
 });
 const MIME_TYPES = Object.freeze({ '.css': 'text/css', '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json' });
 
-// Function: a narrow static server reproduces the deployed origin and emits the required public CORS policy.
-function staticServer() {
+// Function: a narrow static server can reproduce hosts both with and without a public CORS policy.
+function staticServer({ cors = true } = {}) {
     return createServer(async (request, response) => {
         try {
             const requestUrl = new URL(request.url, 'http://127.0.0.1');
@@ -23,10 +23,9 @@ function staticServer() {
             if (relativePath.includes('..')) throw new Error('Invalid path');
             const extension = relativePath.slice(relativePath.lastIndexOf('.'));
             const body = await readFile(new URL(relativePath, ROOT));
-            response.writeHead(200, {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': MIME_TYPES[extension] || 'application/octet-stream',
-            });
+            const headers = { 'Content-Type': MIME_TYPES[extension] || 'application/octet-stream' };
+            if (cors) headers['Access-Control-Allow-Origin'] = '*';
+            response.writeHead(200, headers);
             response.end(body);
         } catch {
             response.writeHead(404);
@@ -35,8 +34,31 @@ function staticServer() {
     });
 }
 
+// Function: a separate application origin imports only the public scripts and explicit interface URLs.
+function applicationServer(assetAddress) {
+    const interfacePaths = Object.freeze({
+        resourceLibraryStylesheet: 'assets/resource-library.css',
+        libraryWindowScript: 'NewUI/Library_Window.js',
+        libraryWindowConfiguration: 'NewUI/windows/library_window.json',
+        libraryWindowFileBridge: 'NewUI/windows/library_window.data.js',
+        lightboxStylesheet: 'assets/lightbox.css',
+    });
+    const resolvedInterface = Object.fromEntries(Object.entries(interfacePaths)
+        .map(([key, path]) => [key, new URL(path, assetAddress).href]));
+    const configuration = JSON.stringify({ interface: resolvedInterface, api: {}, content: {} });
+    const page = `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${assetAddress}demo.css"></head>
+        <body><main class="demo-panel"><button id="openLibrary">Open</button><button id="openLightbox">Lightbox</button></main>
+        <script>window.BZNLibraryRuntimeConfig=${configuration};</script>
+        <script src="${assetAddress}assets/lightbox.js"></script><script src="${assetAddress}assets/resource-library-v2.js"></script>
+        <script src="${assetAddress}demo.js"></script></body></html>`;
+    return createServer((request, response) => {
+        response.writeHead(200, { 'Content-Type': 'text/html' });
+        response.end(page);
+    });
+}
+
 // Function: each cycle verifies first/last page geometry and an independently opened Lightbox.
-async function verifyCycle(browser, address, cycle) {
+async function verifyCycle(browser, address, cycle, { crossOrigin = false } = {}) {
     const page = await browser.newPage();
     const errors = [];
     page.on('pageerror', (error) => errors.push(String(error)));
@@ -55,18 +77,33 @@ async function verifyCycle(browser, address, cycle) {
     assert.equal(await grid.locator('.bzn-resource-library-item').count(), SETTINGS.expectedLastPage);
     const lastGeometry = await page.locator('.bzn-resource-library-window').boundingBox();
     assert.deepEqual(lastGeometry, firstGeometry);
+    if (crossOrigin) {
+        const resources = await page.evaluate(() => performance.getEntriesByType('resource').map((entry) => entry.name));
+        assert.equal(resources.some((url) => url.includes('library_window.data.js')), true);
+        assert.equal(resources.some((url) => url.includes('library_window.json')), false);
+    }
     assert.deepEqual(errors, []);
     await page.close();
     console.log(`library-ui browser cycle ${cycle}: OK`);
 }
 
-const server = staticServer();
-await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-const address = `http://127.0.0.1:${server.address().port}/`;
+const sameOriginServer = staticServer();
+const assetServer = staticServer({ cors: false });
+await new Promise((resolve) => sameOriginServer.listen(0, '127.0.0.1', resolve));
+await new Promise((resolve) => assetServer.listen(0, '127.0.0.1', resolve));
+const sameOriginAddress = `http://127.0.0.1:${sameOriginServer.address().port}/`;
+const assetAddress = `http://127.0.0.1:${assetServer.address().port}/`;
+const hostServer = applicationServer(assetAddress);
+await new Promise((resolve) => hostServer.listen(0, '127.0.0.1', resolve));
+const hostAddress = `http://127.0.0.1:${hostServer.address().port}/`;
 const browser = await chromium.launch({ executablePath: SETTINGS.browserPath, headless: true });
 try {
-    for (let cycle = 1; cycle <= SETTINGS.cycles; cycle += 1) await verifyCycle(browser, address, cycle);
+    for (let cycle = 1; cycle <= SETTINGS.cycles; cycle += 1) await verifyCycle(browser, sameOriginAddress, cycle);
+    for (let cycle = 1; cycle <= SETTINGS.cycles; cycle += 1) {
+        await verifyCycle(browser, hostAddress, `cross-origin ${cycle}`, { crossOrigin: true });
+    }
 } finally {
     await browser.close();
-    await new Promise((resolve) => server.close(resolve));
+    await Promise.all([sameOriginServer, assetServer, hostServer]
+        .map((server) => new Promise((resolve) => server.close(resolve))));
 }

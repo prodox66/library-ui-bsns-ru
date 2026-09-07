@@ -8,6 +8,8 @@
 
 `NewUI/Library_Window.js::configuration <- NewUI/Library_Window.js::BZNNewUILibraryWindow.create, NewUI/Library_Window.js::BZNNewUILibraryWindow.pageSize`
 
+`NewUI/Library_Window.js::loadBridgeConfiguration <- NewUI/Library_Window.js::configuration [file and cross-origin consumers]`
+
 `NewUI/Library_Window.js::LibraryWindow.resolve <- assets/resource-library-v2.js::open`
 
 `NewUI/Library_Window.js::LibraryWindow.configure <- assets/resource-library-v2.js::open`

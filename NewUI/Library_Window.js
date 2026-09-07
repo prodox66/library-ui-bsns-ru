@@ -60,21 +60,27 @@
         }
         return freezeTree(configuration);
     }
-    // Function: HTTP reads JSON directly; standalone pages load the generated, read-only bridge from that same JSON.
+    // Function: cross-origin and file consumers load the generated script bridge without requiring JSON CORS headers.
+    async function loadBridgeConfiguration() {
+        if (!window[DATA_KEY]) await new Promise((resolve, reject) => {
+            const script = document.createElement('script'); script.src = assetUrl(CONFIGURATION.script);
+            script.onload = () => { script.remove(); resolve(); };
+            script.onerror = () => { script.remove(); reject(new Error('Library configuration is unavailable')); };
+            document.head.appendChild(script);
+        });
+        return validate(window[DATA_KEY]);
+    }
+    // Function: same-origin HTTP keeps editable JSON, while remote hosts use its generated script representation.
     function configuration() {
         if (!configurationPromise) configurationPromise = (async () => {
-            if (location.protocol !== 'file:') {
+            const jsonUrl = new URL(assetUrl(CONFIGURATION.json));
+            const sameOriginHttp = location.protocol !== 'file:' && jsonUrl.origin === location.origin;
+            if (sameOriginHttp) {
                 const response = await fetch(assetUrl(CONFIGURATION.json), { cache: 'no-cache', credentials: 'same-origin' });
                 if (!response.ok) throw new Error(`Library configuration: HTTP ${response.status}`);
                 return validate(await response.json());
             }
-            if (!window[DATA_KEY]) await new Promise((resolve, reject) => {
-                const script = document.createElement('script'); script.src = assetUrl(CONFIGURATION.script);
-                script.onload = () => { script.remove(); resolve(); };
-                script.onerror = () => { script.remove(); reject(new Error('Library configuration is unavailable')); };
-                document.head.appendChild(script);
-            });
-            return validate(window[DATA_KEY]);
+            return loadBridgeConfiguration();
         })().catch(error => { configurationPromise = null; throw error; });
         return configurationPromise;
     }

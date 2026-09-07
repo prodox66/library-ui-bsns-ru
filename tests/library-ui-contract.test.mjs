@@ -40,6 +40,8 @@ assert.doesNotMatch(code.runtime, /webgpu/i);
 assert.ok(code.index.indexOf('runtime-config.js') < code.index.indexOf('assets/lightbox.js'));
 assert.ok(code.index.indexOf('assets/lightbox.js') < code.index.indexOf('assets/resource-library-v2.js'));
 assert.match(code.window, /window\[MODULE_KEY\]/);
+assert.match(code.window, /jsonUrl\.origin === location\.origin/);
+assert.match(code.window, /return loadBridgeConfiguration\(\)/);
 assert.match(code.resourceLibrary, /window\.BZNResourceLibrary/);
 assert.match(code.lightbox, /window\.BZNLightbox/);
 
