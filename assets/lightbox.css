@@ -1,0 +1,138 @@
+/* BZN-CHECKPOINT-NEWUI-PRE-STABLE-BIG-20260829: NewUI pre-stable online-test checkpoint; object controls, project storage, masks, and icon rendering stay linked. */
+.bzn-lightbox {
+    --bzn-lightbox-preview-background: rgba(0, 0, 0, .28);
+    --bzn-lightbox-mask-preview-background: #fff;
+    position: fixed;
+    z-index: 26000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(0, 7, 14, .84);
+    backdrop-filter: blur(5px);
+}
+
+.bzn-lightbox[hidden] { display: none !important; }
+
+/* Semantic presentation: only a mask preview has a white underlay; the image itself and the surrounding chrome are unchanged. */
+.bzn-lightbox[data-lightbox-content-type="masks"] {
+    --bzn-lightbox-preview-background: var(--bzn-lightbox-mask-preview-background);
+}
+
+.bzn-lightbox-window {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    width: min(1180px, calc(100vw - 48px));
+    height: min(860px, calc(100dvh - 48px));
+    overflow: hidden;
+    border: 1px solid var(--ui-line-strong, #4a92a9);
+    border-radius: 9px;
+    background: var(--ui-panel, #0a263b);
+    box-shadow: 0 28px 100px rgba(0, 0, 0, .78);
+}
+
+.bzn-lightbox-header,
+.bzn-lightbox-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--ui-night, #081d2f);
+}
+
+.bzn-lightbox-header {
+    justify-content: space-between;
+    border-bottom: 1px solid var(--ui-line, #1f5268);
+}
+
+.bzn-lightbox-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ui-gold-light, #efd18b);
+    font-weight: 900;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bzn-lightbox-close {
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.bzn-lightbox-stage {
+    display: grid;
+    min-width: 0;
+    min-height: 0;
+    place-items: center;
+    overflow: auto;
+    padding: 12px;
+    background: var(--bzn-lightbox-preview-background);
+    overscroll-behavior: contain;
+}
+
+.bzn-lightbox-stage.is-zoomed {
+    display: block;
+    text-align: center;
+}
+
+.bzn-lightbox-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    object-fit: contain;
+    box-shadow: 0 8px 34px rgba(0, 0, 0, .5);
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.bzn-lightbox-stage.is-zoomed .bzn-lightbox-image {
+    max-width: none;
+    max-height: none;
+}
+
+.bzn-lightbox-footer {
+    justify-content: flex-start;
+    border-top: 1px solid var(--ui-line, #1f5268);
+}
+
+.bzn-lightbox-footer button {
+    min-width: 96px;
+}
+
+.bzn-lightbox-view-button {
+    min-width: 82px !important;
+}
+
+.bzn-lightbox-zoom-value {
+    min-width: 52px;
+    color: var(--ui-text-muted, #a7bdc4);
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.bzn-lightbox-secondary {
+    margin-left: auto;
+}
+
+.bzn-lightbox-primary {
+    border-color: var(--ui-gold, #d8a63b) !important;
+    background: var(--ui-gold-deep, #75561d) !important;
+    color: var(--ui-gold-light, #efd18b) !important;
+}
+
+@media (max-width: 720px) {
+    .bzn-lightbox { padding: 10px; }
+    .bzn-lightbox-window { width: calc(100vw - 20px); height: calc(100dvh - 20px); }
+    .bzn-lightbox-footer { flex-wrap: wrap; }
+    .bzn-lightbox-secondary { margin-left: 0; }
+}
+/* BZN-CHECKPOINT-NEW-UI-FULL-STATE-20260826
+ * Change: preserve the complete NewUI text-file state after unified object property windows and debug removal.
+ */

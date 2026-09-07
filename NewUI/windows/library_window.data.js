@@ -1,0 +1,159 @@
+// GENERATED from library_window.json; edit JSON and run NewUI/tools/build-library-window-config.mjs.
+window.BZNLibraryWindowConfiguration = {
+  "version": 1,
+  "layout": {
+    "columns": 6,
+    "rows": 5,
+    "thumbnailWidth": 112,
+    "thumbnailHeight": 92,
+    "gap": 8,
+    "padding": 12,
+    "border": 1,
+    "headerHeight": 44,
+    "tabsHeight": 38,
+    "footerHeight": 46,
+    "navigationHeight": 32,
+    "navigationFontSize": 14,
+    "captionHeight": 18,
+    "tabFontSize": 11
+  },
+  "labels": {
+    "title": "Библиотека",
+    "tabs": "Разделы библиотеки",
+    "close": "Закрыть",
+    "refresh": "Обновить",
+    "previous": "Назад",
+    "next": "Далее",
+    "unavailable": "Скоро!",
+    "incompatible": "Недоступно для этого содержимого"
+  },
+  "defaults": {
+    "caller": "imageLibrary",
+    "inactiveTabState": "disabled"
+  },
+  "tabs": [
+    {
+      "id": "Images",
+      "label": "Изображения",
+      "contentType": "Images"
+    },
+    {
+      "id": "masks",
+      "label": "Маски",
+      "contentType": "masks"
+    },
+    {
+      "id": "Stock",
+      "label": "Стоки",
+      "contentType": "Stock"
+    },
+    {
+      "id": "Lib",
+      "label": "Библиотека",
+      "contentType": "Lib"
+    },
+    {
+      "id": "ComfyHistory",
+      "label": "Генерации",
+      "contentType": "ComfyHistory"
+    },
+    {
+      "id": "texts",
+      "label": "Тексты",
+      "contentType": "texts"
+    },
+    {
+      "id": "styles",
+      "label": "Стили",
+      "contentType": "styles"
+    }
+  ],
+  "profiles": {
+    "masks": {
+      "Images": "disabled",
+      "masks": "enabled",
+      "Stock": "disabled",
+      "Lib": "disabled",
+      "ComfyHistory": "disabled",
+      "texts": "disabled",
+      "styles": "disabled"
+    },
+    "images": {
+      "Images": "enabled",
+      "masks": "disabled",
+      "Stock": "enabled",
+      "Lib": "enabled",
+      "ComfyHistory": "enabled",
+      "texts": "disabled",
+      "styles": "disabled"
+    },
+    "texts": {
+      "Images": "hidden",
+      "masks": "hidden",
+      "Stock": "hidden",
+      "Lib": "hidden",
+      "ComfyHistory": "hidden",
+      "texts": "enabled",
+      "styles": "disabled"
+    },
+    "styles": {
+      "Images": "hidden",
+      "masks": "hidden",
+      "Stock": "hidden",
+      "Lib": "hidden",
+      "ComfyHistory": "hidden",
+      "texts": "disabled",
+      "styles": "enabled"
+    }
+  },
+  "callers": {
+    "readyBoxMasks": {
+      "contentType": "masks",
+      "activeTab": "masks",
+      "profile": "masks"
+    },
+    "readyBackgroundMasks": {
+      "contentType": "masks",
+      "activeTab": "masks",
+      "profile": "masks"
+    },
+    "imageLibrary": {
+      "contentType": "Images",
+      "activeTab": "Images",
+      "profile": "images"
+    },
+    "stockLibrary": {
+      "contentType": "Stock",
+      "activeTab": "Stock",
+      "profile": "images"
+    },
+    "projectImages": {
+      "contentType": "Lib",
+      "activeTab": "Lib",
+      "profile": "images"
+    },
+    "comfyHistory": {
+      "contentType": "ComfyHistory",
+      "activeTab": "ComfyHistory",
+      "profile": "images"
+    },
+    "textLibrary": {
+      "contentType": "texts",
+      "activeTab": "texts",
+      "profile": "texts"
+    },
+    "styleLibrary": {
+      "contentType": "styles",
+      "activeTab": "styles",
+      "profile": "styles"
+    }
+  },
+  "libraryCallers": {
+    "masks": "readyBoxMasks",
+    "backgrounds": "imageLibrary",
+    "images": "imageLibrary",
+    "free-stock": "stockLibrary",
+    "texts": "textLibrary",
+    "styles": "styleLibrary"
+  }
+};
