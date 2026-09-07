@@ -4,6 +4,12 @@
 .bzn-resource-library-modal {
     --bzn-resource-library-preview-background: rgba(0, 0, 0, .28);
     --bzn-resource-library-mask-preview-background: #fff;
+    --bzn-resource-library-checker-light: #d7d9dc;
+    --bzn-resource-library-checker-dark: #aeb2b7;
+    --bzn-resource-library-checker-size: 12px;
+    --bzn-resource-library-image-preview-background:
+        linear-gradient(45deg, var(--bzn-resource-library-checker-dark) 25%, transparent 25%, transparent 75%, var(--bzn-resource-library-checker-dark) 75%),
+        linear-gradient(45deg, var(--bzn-resource-library-checker-dark) 25%, var(--bzn-resource-library-checker-light) 25%, var(--bzn-resource-library-checker-light) 75%, var(--bzn-resource-library-checker-dark) 75%);
     position: fixed;
     z-index: 24000;
     inset: 0;
@@ -21,6 +27,12 @@
 .bzn-resource-library-modal[data-resource-library="masks"],
 .bzn-resource-library-modal[data-library-active-tab="masks"] {
     --bzn-resource-library-preview-background: var(--bzn-resource-library-mask-preview-background);
+}
+
+/* Image transparency remains visible in every Images gallery without changing the image pixels. */
+.bzn-resource-library-modal[data-resource-library="images"],
+.bzn-resource-library-modal[data-library-active-tab="Images"] {
+    --bzn-resource-library-preview-background: var(--bzn-resource-library-image-preview-background);
 }
 
 .bzn-resource-library-window {
@@ -182,6 +194,8 @@
     place-items: center;
     overflow: hidden;
     background: var(--bzn-resource-library-preview-background);
+    background-position: 0 0, calc(var(--bzn-resource-library-checker-size) / 2) calc(var(--bzn-resource-library-checker-size) / 2);
+    background-size: var(--bzn-resource-library-checker-size) var(--bzn-resource-library-checker-size);
 }
 
 .bzn-resource-library-preview img {

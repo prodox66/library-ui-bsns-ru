@@ -2,6 +2,12 @@
 .bzn-lightbox {
     --bzn-lightbox-preview-background: rgba(0, 0, 0, .28);
     --bzn-lightbox-mask-preview-background: #fff;
+    --bzn-lightbox-checker-light: #d7d9dc;
+    --bzn-lightbox-checker-dark: #aeb2b7;
+    --bzn-lightbox-checker-size: 16px;
+    --bzn-lightbox-image-preview-background:
+        linear-gradient(45deg, var(--bzn-lightbox-checker-dark) 25%, transparent 25%, transparent 75%, var(--bzn-lightbox-checker-dark) 75%),
+        linear-gradient(45deg, var(--bzn-lightbox-checker-dark) 25%, var(--bzn-lightbox-checker-light) 25%, var(--bzn-lightbox-checker-light) 75%, var(--bzn-lightbox-checker-dark) 75%);
     position: fixed;
     z-index: 26000;
     inset: 0;
@@ -17,6 +23,11 @@
 /* Semantic presentation: only a mask preview has a white underlay; the image itself and the surrounding chrome are unchanged. */
 .bzn-lightbox[data-lightbox-content-type="masks"] {
     --bzn-lightbox-preview-background: var(--bzn-lightbox-mask-preview-background);
+}
+
+/* Ordinary images use the neutral transparency grid; masks retain their explicit white underlay below. */
+.bzn-lightbox[data-lightbox-content-type="Images"] {
+    --bzn-lightbox-preview-background: var(--bzn-lightbox-image-preview-background);
 }
 
 .bzn-lightbox-window {
@@ -70,6 +81,8 @@
     overflow: auto;
     padding: 12px;
     background: var(--bzn-lightbox-preview-background);
+    background-position: 0 0, calc(var(--bzn-lightbox-checker-size) / 2) calc(var(--bzn-lightbox-checker-size) / 2);
+    background-size: var(--bzn-lightbox-checker-size) var(--bzn-lightbox-checker-size);
     overscroll-behavior: contain;
 }
 
